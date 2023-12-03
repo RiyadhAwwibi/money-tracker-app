@@ -8,6 +8,7 @@ import Dashboard from './Components/Dashboard/Dashboard';
 import Income from './Components/Income/Income';
 import Expenses from './Components/Expenses/Expenses';
 import { useGlobalContext } from './context/globalContext';
+import { Helmet } from 'react-helmet';
 
 function App() {
   const [active, setActive] = useState(1);
@@ -35,6 +36,9 @@ function App() {
 
   return (
     <AppStyled bg={bg} className="App">
+      <Helmet htmlAttributes>
+        <title>Expense Tracker</title>
+      </Helmet>
       {orbMemo}
       <MainLayout>
         <Navigation active={active} setActive={setActive} setModal={setModal} />
