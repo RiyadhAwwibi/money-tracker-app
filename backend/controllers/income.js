@@ -1,4 +1,4 @@
-const IncomeSchema = require('../models/IncomeModel');
+const IncomeSchema = require("../models/IncomeModel");
 
 exports.addIncome = async (req, res) => {
   const { title, amount, category, description, date } = req.body;
@@ -14,15 +14,17 @@ exports.addIncome = async (req, res) => {
   try {
     // validations
     if (!title || !category || !description || !date) {
-      return res.status(400).json({ message: 'All fields are required!' });
+      return res.status(400).json({ message: "All fields are required!" });
     }
-    if (amount <= 0 || !amount === 'number') {
-      return res.status(400).json({ message: 'Amount must be a positive number!' });
+    if (amount <= 0 || !amount === "number") {
+      return res
+        .status(400)
+        .json({ message: "Amount must be a positive number!" });
     }
     await income.save();
-    res.status(200).json({ message: 'Income Added' });
+    res.status(200).json({ message: "Income Added" });
   } catch (error) {
-    res.status(200).json({ message: 'Server Error' });
+    res.status(200).json({ message: "Server Error" });
   }
 
   console.log(income);
@@ -33,17 +35,63 @@ exports.getIncomes = async (req, res) => {
     const incomes = await IncomeSchema.find().sort({ createdAt: -1 });
     res.status(200).json(incomes);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: "Server Error" });
   }
+};
+
+exports.getSigleIncome = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const incomes = await IncomeSchema.findById(id);
+    res.status(200).json(incomes);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+exports.updateIncomes = async (req, res) => {
+  const { title, amount, category, description, date } = req.body;
+  const { id } = req.params;
+
+  const income = IncomeSchema.findByIdAndUpdate(
+    id,
+    {
+      title,
+      amount,
+      category,
+      description,
+      date: date,
+    },
+    { new: true }
+  );
+
+  try {
+    // validations
+    if (!title || !category || !description || !date) {
+      return res.status(400).json({ message: "All fields are required!" });
+    }
+    if (amount <= 0 || !amount === "number") {
+      return res
+        .status(400)
+        .json({ message: "Amount must be a positive number!" });
+    }
+    await income.save();
+    res.status(200).json({ message: "Income Added" });
+  } catch (error) {
+    res.status(200).json({ message: "Server Error" });
+  }
+
+  console.log(income);
 };
 
 exports.deleteIncome = async (req, res) => {
   const { id } = req.params;
   IncomeSchema.findByIdAndDelete(id)
     .then((income) => {
-      res.status(200).json({ message: 'Income Deleted' });
+      res.status(200).json({ message: "Income Deleted" });
     })
     .catch((err) => {
-      res.status(500).json({ message: 'Server Error' });
+      res.status(500).json({ message: "Server Error" });
     });
 };
