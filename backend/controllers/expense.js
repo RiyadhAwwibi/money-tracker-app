@@ -54,18 +54,6 @@ exports.updateExpense = async (req, res) => {
   const { title, amount, category, description, date } = req.body;
   const { id } = req.params;
 
-  const income = ExpenseSchema.findByIdAndUpdate(
-    id,
-    {
-      title,
-      amount,
-      category,
-      description,
-      date: date,
-    },
-    { new: true }
-  );
-
   try {
     // validations
     if (!title || !category || !description || !date) {
@@ -76,13 +64,24 @@ exports.updateExpense = async (req, res) => {
         .status(400)
         .json({ message: "Amount must be a positive number!" });
     }
-    await income.save();
+
+    const income = await ExpenseSchema.findByIdAndUpdate(
+      id,
+      {
+        title,
+        amount,
+        category,
+        description,
+        date: date,
+      },
+      { new: true }
+    );
+
+    console.log(income);
     res.status(200).json({ message: "Expense Added" });
   } catch (error) {
     res.status(200).json({ message: "Server Error" });
   }
-
-  console.log(income);
 };
 
 exports.deleteExpense = async (req, res) => {
