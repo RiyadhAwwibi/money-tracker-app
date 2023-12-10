@@ -17,7 +17,7 @@ const router = require("express").Router();
 
 router
   .post("/add-income", addIncome)
-  .get("/get-incomes", getIncomes)
+  .get("/get-incomes/", getIncomes)
   .get("/get-incomes/:id", getSigleIncome)
   .delete("/delete-income/:id", deleteIncome)
   .patch("/update-income/:id", updateIncomes)

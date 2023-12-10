@@ -42,8 +42,42 @@ exports.getSigleExpense = async (req, res) => {
 };
 
 exports.getExpense = async (req, res) => {
+  let incomes;
+  const { date } = req.query;
+  console.log(date);
+
   try {
-    const incomes = await ExpenseSchema.find().sort({ createdAt: -1 });
+    if (!date) {
+      incomes = await ExpenseSchema.find({
+        $and: [
+          {
+            $expr: {
+              $eq: [{ $month: "$date" }, new Date().getMonth() + 1],
+            },
+          },
+          {
+            $expr: {
+              $eq: [{ $year: "$date" }, new Date().getFullYear()],
+            },
+          },
+        ],
+      }).sort({ createdAt: -1 });
+    } else {
+      incomes = await ExpenseSchema.find({
+        $and: [
+          {
+            $expr: {
+              $eq: [{ $month: "$date" }, new Date(date).getMonth() + 1],
+            },
+          },
+          {
+            $expr: {
+              $eq: [{ $year: "$date" }, new Date(date).getFullYear()],
+            },
+          },
+        ],
+      }).sort({ createdAt: -1 });
+    }
     res.status(200).json(incomes);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
