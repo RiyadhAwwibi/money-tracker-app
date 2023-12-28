@@ -44,10 +44,11 @@ import {
   charity,
   social,
   bill,
+  edit,
 } from '../../utils/icons';
 import Button from '../Button/Button';
 
-function IncomeItem({ id, title, amount, date, category, description, deleteItem, indicatorColor, type }) {
+function IncomeItem({ id, title, amount, date, category, description, setEditData, updatedData, deleteItem, indicatorColor, type }) {
   const categoryIcon = () => {
     switch (category) {
       case 'salary':
@@ -145,6 +146,24 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
 
   console.log('type', type);
 
+  const handleEdit = () => {
+    setEditData({
+      id,
+      title,
+      amount,
+      date,
+      category,
+      description,
+      type,
+      // ... tambahkan properti lain yang diperlukan
+    });
+    updateItem(id, updatedData);
+  };
+
+  const updateItem = (data) => {
+    updateItem(id, data); // Pastikan Anda memiliki fungsi updateItem di useGlobalContext
+  };
+
   return (
     <IncomeItemStyled indicator={indicatorColor}>
       <div className="icon">{type === 'expense' ? expenseCatIcon() : categoryIcon()}</div>
@@ -163,7 +182,12 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
             </p>
           </div>
           <div className="btn-con">
-            <Button icon={trash} bPad={'1rem'} bRad={'50%'} bg={'var(--primary-color'} color={'#f1f2fa'} iColor={'#f1f2fa'} hColor={'var(--color-green)'} onClick={() => deleteItem(id)} />
+            <div className="i-edit">
+              <Button icon={edit} color={'var(--primary-color'} hColor={'var(--color-green)'} onClick={handleEdit} />
+            </div>
+            <div className="i-del">
+              <Button icon={trash} color={'var(--color-red'} hColor={'var(--color-green)'} onClick={() => deleteItem(id)} />
+            </div>
           </div>
         </div>
       </div>
@@ -189,7 +213,6 @@ const IncomeItemStyled = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-
     i {
       font-size: 2.6rem;
     }
@@ -215,12 +238,12 @@ const IncomeItemStyled = styled.div`
         background: ${(props) => props.indicator};
       }
     }
-    
+
     .inner-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      
+
       .text {
         display: flex;
         align-items: center;
@@ -236,12 +259,19 @@ const IncomeItemStyled = styled.div`
           gap: 0.5rem;
           color: var(--primary-color);
           opacity: 0.8;
-          
+        }
+      }
+      .btn-con {
+        display: flex;
+        gap: 0.6rem;
+        justify-content: center;
+        i {
+          font-size: 1.6rem;
+          }
+        
         }
       }
     }
-  }
-  
   }
 `;
 

@@ -7,7 +7,7 @@ import ExpenseForm from './ExpenseForm';
 import currencyFormat from 'currency-formatter';
 
 function Expenses() {
-  const { addIncome, expenses, getExpenses, deleteExpense, totalExpenses } = useGlobalContext();
+  const { addIncome, expenses, getExpenses, updateExpense, deleteExpense, totalExpenses } = useGlobalContext();
 
   useEffect(() => {
     getExpenses();
@@ -27,7 +27,9 @@ function Expenses() {
             {expenses.map((income) => {
               const { _id, title, amount, date, category, description, type } = income;
               console.log(income);
-              return <IncomeItem key={_id} id={_id} title={title} description={description} amount={amount} date={date} type={type} category={category} indicatorColor="var(--color-red)" deleteItem={deleteExpense} />;
+              return (
+                <IncomeItem key={_id} id={_id} title={title} description={description} amount={amount} date={date} type={type} category={category} indicatorColor="var(--color-red)" updateItem={updateExpense} deleteItem={deleteExpense} />
+              );
             })}
           </div>
         </div>

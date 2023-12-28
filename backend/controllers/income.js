@@ -37,6 +37,28 @@ exports.getIncomes = async (req, res) => {
   }
 };
 
+exports.updateIncome = async (req, res) => {
+  const { id } = req.params;
+  const { title, amount, category, description, date } = req.body;
+
+  try {
+    // Validasi
+    if (!title || !category || !description || !date) {
+      return res.status(400).json({ message: 'All fields are required!' });
+    }
+    if (amount <= 0 || typeof amount !== 'number') {
+      return res.status(400).json({ message: 'Amount must be a positive number!' });
+    }
+
+    const updatedIncome = await IncomeSchema.findByIdAndUpdate(id, { title, amount, category, description, date }, { new: true });
+
+    res.status(200).json({ message: 'Income Updated', data: updatedIncome });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 exports.deleteIncome = async (req, res) => {
   const { id } = req.params;
   IncomeSchema.findByIdAndDelete(id)

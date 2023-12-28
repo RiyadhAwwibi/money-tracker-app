@@ -24,6 +24,13 @@ export const GlobalProvider = ({ children }) => {
     console.log(response.data);
   };
 
+  const updateIncome = async (id, updatedData) => {
+    const response = await axios.put(`${BASE_URL}edit-income/${id}`, updatedData).catch((err) => {
+      setError(err.response.data.message);
+    });
+    getIncomes();
+  };
+
   const deleteIncome = async (id) => {
     const res = await axios.delete(`${BASE_URL}delete-income/${id}`);
     getIncomes();
@@ -50,6 +57,13 @@ export const GlobalProvider = ({ children }) => {
     const response = await axios.get(`${BASE_URL}get-expenses`);
     setExpenses(response.data);
     console.log(response.data);
+  };
+
+  const updateExpense = async (id, updatedData) => {
+    const response = await axios.put(`${BASE_URL}edit-expense/${id}`, updatedData).catch((err) => {
+      setError(err.response.data.message);
+    });
+    getExpenses();
   };
 
   const deleteExpense = async (id) => {
@@ -84,12 +98,14 @@ export const GlobalProvider = ({ children }) => {
       value={{
         addIncome,
         getIncomes,
+        updateIncome,
         incomes,
         deleteIncome,
         expenses,
         totalIncome,
         addExpense,
         getExpenses,
+        updateExpense,
         deleteExpense,
         totalExpenses,
         totalBalance,

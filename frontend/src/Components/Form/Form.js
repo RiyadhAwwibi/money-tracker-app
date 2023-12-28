@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -7,7 +7,7 @@ import Button from '../Button/Button';
 import { plus } from '../../utils/icons';
 
 function Form() {
-  const { addIncome, getIncomes, error, setError } = useGlobalContext();
+  const { addIncome, getIncomes, error, setError, updateIncome, updateExpense, handleSubmit } = useGlobalContext();
   const [inputState, setInputState] = useState({
     title: '',
     amount: '',
@@ -23,20 +23,29 @@ function Form() {
     setError('');
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    addIncome(inputState);
-    setInputState({
-      title: '',
-      amount: '',
-      date: '',
-      category: '',
-      description: '',
-    });
+  const updateItem = (type, id, updatedData) => {
+    if (type === 'income') {
+      updateIncome(id, updatedData);
+    } else if (type === 'expense') {
+      updateExpense(id, updatedData);
+    }
   };
 
+  const [editData, setEditData] = useState(null);
+  useEffect(() => {
+    if (editData) {
+      setInputState({
+        title: editData.title,
+        amount: editData.amount,
+        date: editData.date,
+        category: editData.category,
+        description: editData.description,
+      });
+    }
+  }, [editData]);
+
   return (
-    <FormStyled onSubmit={handleSubmit}>
+    <FormStyled onSubmit={handleSubmit} editData={editData}>
       {error && <p className="error">{error}</p>}
       <div className="input-control">
         <input type="text" value={title} name={'title'} placeholder="Judul Pemasukan" onChange={handleInput('title')} />

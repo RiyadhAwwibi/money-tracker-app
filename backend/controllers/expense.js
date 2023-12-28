@@ -37,6 +37,28 @@ exports.getExpense = async (req, res) => {
   }
 };
 
+exports.updateExpense = async (req, res) => {
+  const { id } = req.params;
+  const { title, amount, category, description, date } = req.body;
+
+  try {
+    // validations
+    if (!title || !category || !description || !date) {
+      return res.status(400).json({ message: 'All fields are required!' });
+    }
+    if (amount <= 0 || typeof amount !== 'number') {
+      return res.status(400).json({ message: 'Amount must be a positive number!' });
+    }
+
+    const updatedExpense = await ExpenseSchema.findByIdAndUpdate(id, { title, amount, category, description, date }, { new: true });
+
+    res.status(200).json({ message: 'Expense Updated', data: updatedExpense });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 exports.deleteExpense = async (req, res) => {
   const { id } = req.params;
   ExpenseSchema.findByIdAndDelete(id)
