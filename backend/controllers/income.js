@@ -32,43 +32,25 @@ exports.addIncome = async (req, res) => {
 
 exports.getIncomes = async (req, res) => {
   let incomes;
-  const { date } = req.query;
-  console.log(date);
+  const { month, year } = req.query;
+  console.log(req.query);
+  const parsedMonth = parseInt(month);
+  const parsedYear = parseInt(year);
 
   try {
-    if (!date) {
-      incomes = await IncomeSchema.find({
-        $and: [
-          {
-            $expr: {
-              $eq: [{ $month: "$date" }, new Date().getMonth() + 1],
-            },
-          },
-          {
-            $expr: {
-              $eq: [{ $year: "$date" }, new Date().getFullYear()],
-            },
-          },
-        ],
-      }).sort({ createdAt: -1 });
+    if (Object.keys(req.query).length === 0) {
+      incomes = await IncomeSchema.find().sort({ createdAt: -1 });
     } else {
       incomes = await IncomeSchema.find({
-        $and: [
-          {
-            $expr: {
-              $eq: [{ $month: "$date" }, new Date(date).getMonth() + 1],
-            },
-          },
-          {
-            $expr: {
-              $eq: [{ $year: "$date" }, new Date(date).getFullYear()],
-            },
-          },
-        ],
-      }).sort({ createdAt: -1 });
+        date: {
+          $gte: new Date(parsedYear, parsedMonth - 1, 1), // Bulan dimulai dari 0, sehingga kurangkan 1
+          $lt: new Date(parsedYear, parsedMonth, 1),
+        },
+      });
     }
     res.status(200).json(incomes);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Server Error" });
   }
 };
