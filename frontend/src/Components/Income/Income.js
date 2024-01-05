@@ -1,35 +1,81 @@
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
-import { useGlobalContext } from '../../context/globalContext';
-import { InnerLayout } from '../../styles/Layouts';
-import Form from '../Form/Form';
-import currencyFormat from 'currency-formatter';
-import IncomeItem from '../IncomeItem/IncomeItem';
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import ReactDatePicker from "react-datepicker";
+import { useGlobalContext } from "../../context/globalContext";
+import { InnerLayout } from "../../styles/Layouts";
+import Form from "../Form/Form";
+import currencyFormat from "currency-formatter";
+import IncomeItem from "../IncomeItem/IncomeItem";
 
 function Income() {
-  const { addIncome, incomes, getIncomes, updateIncome, deleteIncome, totalIncome } = useGlobalContext();
+  const [date, setDate] = useState("");
+  const {
+    addIncome,
+    incomes,
+    getIncomes,
+    deleteIncome,
+    totalIncome,
+    setSelectedIdIncome,
+  } = useGlobalContext();
 
   useEffect(() => {
-    getIncomes();
-  }, []);
+    if (date) {
+      getIncomes(date);
+    } else {
+      getIncomes();
+    }
+  }, [date]);
   return (
     <IncomeStyled>
       <InnerLayout>
         <h1>Pemasukan</h1>
         <h2 className="total-income">
-          Total : <span>{currencyFormat.format(totalIncome(), { code: 'IDR' })}</span>
+          Total :{" "}
+          <span>{currencyFormat.format(totalIncome(), { code: "IDR" })}</span>
         </h2>
         <div className="income-content">
           <div className="form-container">
             <Form />
           </div>
-          <div className="incomes">
-            {incomes.map((income) => {
-              const { _id, title, amount, date, category, description, type } = income;
-              return (
-                <IncomeItem key={_id} id={_id} title={title} description={description} amount={amount} date={date} type={type} category={category} indicatorColor="var(--color-green)" updateItem={updateIncome} deleteItem={deleteIncome} />
-              );
-            })}
+          <div>
+            <ReactDatePicker
+              id="date"
+              placeholderText="Tanggal"
+              selected={date}
+              dateFormat="MM/yyyy"
+              showMonthYearPicker
+              onChange={(date) => {
+                setDate(date);
+              }}
+            />
+            <div className="incomes">
+              {incomes.map((income) => {
+                const {
+                  _id,
+                  title,
+                  amount,
+                  date,
+                  category,
+                  description,
+                  type,
+                } = income;
+                return (
+                  <IncomeItem
+                    onClick={() => setSelectedIdIncome(_id)}
+                    key={_id}
+                    id={_id}
+                    title={title}
+                    description={description}
+                    amount={amount}
+                    date={date}
+                    type={type}
+                    category={category}
+                    indicatorColor="var(--color-green)"
+                    deleteItem={deleteIncome}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
       </InnerLayout>

@@ -1,21 +1,21 @@
-import React, { useState, useMemo } from 'react';
-import styled from 'styled-components';
-import bg from './img/bg.jpg';
-import { MainLayout } from './styles/Layouts';
-import Orb from './Components/Orb/Orb';
-import Navigation from './Components/Navigation/Navigation';
-import Dashboard from './Components/Dashboard/Dashboard';
-import Income from './Components/Income/Income';
-import Expenses from './Components/Expenses/Expenses';
-import { useGlobalContext } from './context/globalContext';
-import { Helmet } from 'react-helmet';
+import React, { useState, useMemo } from "react";
+import styled from "styled-components";
+import bg from "./img/bg.jpg";
+import { MainLayout } from "./styles/Layouts";
+import Orb from "./Components/Orb/Orb";
+import Navigation from "./Components/Navigation/Navigation";
+import Dashboard from "./Components/Dashboard/Dashboard";
+import Income from "./Components/Income/Income";
+import Expenses from "./Components/Expenses/Expenses";
+import { useGlobalContext } from "./context/globalContext";
+import { Helmet } from "react-helmet";
 
 function App() {
   const [active, setActive] = useState(1);
   const [modal, setModal] = useState(false);
 
-  const global = useGlobalContext();
-  console.log(global);
+  const { setSelectedId } = useGlobalContext();
+  // console.log(global);
 
   const displayData = () => {
     switch (active) {
@@ -36,7 +36,7 @@ function App() {
 
   return (
     <AppStyled bg={bg} className="App">
-      <Helmet htmlAttributes>
+      <Helmet>
         <title>Expense Tracker</title>
       </Helmet>
       {orbMemo}

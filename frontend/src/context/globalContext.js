@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from "react";
+import axios from "axios";
 
-const BASE_URL = 'https://elegant-wasp-capris.cyclic.app/api/v1/';
+const BASE_URL = "http://localhost:5000/api/v1/";
 
 const GlobalContext = React.createContext();
 
@@ -9,26 +9,57 @@ export const GlobalProvider = ({ children }) => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedIdIncome, setSelectedIdIncome] = useState(null);
+  const [selectedIdExpenses, setSelectedIdExpenses] = useState(null);
+  const [resIncomes, setResIncomes] = useState({});
+  const [resExpenses, setResExpenses] = useState({});
 
   //calculate incomes
   const addIncome = async (income) => {
-    const response = await axios.post(`${BASE_URL}add-income`, income).catch((err) => {
-      setError(err.response.data.message);
-    });
+    const response = await axios
+      .post(`${BASE_URL}add-income`, income)
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
+    getIncomes();
+  };
+  //calculate incomes
+  const updateIncome = async (id, income) => {
+    try {
+      await axios.patch(`${BASE_URL}update-income/${id}`, income);
+    } catch (error) {
+      setError(error);
+      // console.log(error);
+    }
     getIncomes();
   };
 
-  const getIncomes = async () => {
-    const response = await axios.get(`${BASE_URL}get-incomes`);
+  const getIncomes = async (date) => {
+    let response;
+    if (isNaN(date)) {
+      response = await axios.get(`${BASE_URL}get-incomes`);
+    } else {
+      response = await axios.get(
+        `${BASE_URL}get-incomes/?month=${
+          new Date(date).getMonth() + 1
+        }&year=${new Date(date).getFullYear()}`
+      );
+    }
+
     setIncomes(response.data);
-    console.log(response.data);
+    // console.log(response.data);
   };
 
-  const updateIncome = async (id, updatedData) => {
-    const response = await axios.put(`${BASE_URL}edit-income/${id}`, updatedData).catch((err) => {
-      setError(err.response.data.message);
+  const getSingleIncomes = async (id) => {
+    const response = await axios.get(`${BASE_URL}get-incomes/${id}`);
+    setResIncomes({
+      ...resIncomes,
+      title: response.data.title,
+      amount: response.data.amount,
+      date: response.data.date,
+      category: response.data.category,
+      description: response.data.description,
     });
-    getIncomes();
   };
 
   const deleteIncome = async (id) => {
@@ -47,23 +78,49 @@ export const GlobalProvider = ({ children }) => {
 
   //calculate expenses
   const addExpense = async (income) => {
-    const response = await axios.post(`${BASE_URL}add-expense`, income).catch((err) => {
-      setError(err.response.data.message);
-    });
+    const response = await axios
+      .post(`${BASE_URL}add-expense`, income)
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
     getExpenses();
   };
 
-  const getExpenses = async () => {
-    const response = await axios.get(`${BASE_URL}get-expenses`);
+  const getExpenses = async (date) => {
+    let response;
+    if (isNaN(date)) {
+      response = await axios.get(`${BASE_URL}get-expenses`);
+    } else {
+      response = await axios.get(
+        `${BASE_URL}get-expenses/?month=${
+          new Date(date).getMonth() + 1
+        }&year=${new Date(date).getFullYear()}`
+      );
+    }
     setExpenses(response.data);
-    console.log(response.data);
+    // console.log(response.data);
   };
 
-  const updateExpense = async (id, updatedData) => {
-    const response = await axios.put(`${BASE_URL}edit-expense/${id}`, updatedData).catch((err) => {
-      setError(err.response.data.message);
-    });
+  const updateExpenses = async (id, income) => {
+    try {
+      await axios.patch(`${BASE_URL}update-expense/${id}`, income);
+    } catch (error) {
+      setError(error);
+      console.log(error);
+    }
     getExpenses();
+  };
+
+  const getSigleExpenses = async (id) => {
+    const response = await axios.get(`${BASE_URL}get-expenses/${id}`);
+    setResExpenses({
+      ...resExpenses,
+      title: response.data.title,
+      amount: response.data.amount,
+      date: response.data.date,
+      category: response.data.category,
+      description: response.data.description,
+    });
   };
 
   const deleteExpense = async (id) => {
@@ -98,20 +155,29 @@ export const GlobalProvider = ({ children }) => {
       value={{
         addIncome,
         getIncomes,
-        updateIncome,
         incomes,
         deleteIncome,
         expenses,
         totalIncome,
         addExpense,
         getExpenses,
-        updateExpense,
         deleteExpense,
         totalExpenses,
         totalBalance,
         transactionHistory,
         error,
         setError,
+        selectedIdIncome,
+        setSelectedIdIncome,
+        getSingleIncomes,
+        resIncomes,
+        updateIncome,
+        updateExpenses,
+        getSigleExpenses,
+        resExpenses,
+        setResExpenses,
+        selectedIdExpenses,
+        setSelectedIdExpenses,
       }}
     >
       {children}
