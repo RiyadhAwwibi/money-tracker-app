@@ -1,7 +1,9 @@
-import React from 'react';
-import styled from 'styled-components';
-import { dateFormat } from '../../utils/dateFormat';
-import currencyFormat from 'currency-formatter';
+import React from "react";
+import styled from "styled-components";
+import { dateFormat } from "../../utils/dateFormat";
+import { useGlobalContext } from "../../context/globalContext";
+
+import currencyFormat from "currency-formatter";
 import {
   book,
   calender,
@@ -44,115 +46,132 @@ import {
   charity,
   social,
   bill,
-} from '../../utils/icons';
-import Button from '../Button/Button';
+} from "../../utils/icons";
+import Button from "../Button/Button";
 
-function IncomeItem({ id, title, amount, date, category, description, deleteItem, indicatorColor, type }) {
+function IncomeItem({
+  id,
+  title,
+  amount,
+  date,
+  category,
+  description,
+  deleteItem,
+  indicatorColor,
+  type,
+}) {
+  const { setSelectedId, selectedId } = useGlobalContext();
+
   const categoryIcon = () => {
     switch (category) {
-      case 'salary':
+      case "salary":
         return money;
-      case 'investments':
+      case "investments":
         return invest;
-      case 'stocks':
+      case "stocks":
         return dividen;
-      case 'bank':
+      case "bank":
         return card;
-      case 'other':
+      case "other":
         return other;
-      case 'gift':
+      case "gift":
         return gift;
-      case 'refund':
+      case "refund":
         return refund;
-      case 'award':
+      case "award":
         return award;
-      case 'sale':
+      case "sale":
         return sale;
-      case 'rental':
+      case "rental":
         return rental;
-      case 'saving':
+      case "saving":
         return saving;
 
       default:
-        return '';
+        return "";
     }
   };
 
   const expenseCatIcon = () => {
     switch (category) {
-      case 'education':
+      case "education":
         return book;
-      case 'health':
+      case "health":
         return medical;
-      case 'foods':
+      case "foods":
         return food;
-      case 'clothing':
+      case "clothing":
         return clothing;
-      case 'travelling':
+      case "travelling":
         return travelling;
-      case 'saving':
+      case "saving":
         return saving;
-      case 'other':
+      case "other":
         return other;
-      case 'insurance':
+      case "insurance":
         return insurance;
-      case 'baby':
+      case "baby":
         return baby;
-      case 'shopping':
+      case "shopping":
         return shopping;
-      case 'fruit':
+      case "fruit":
         return fruit;
-      case 'snack':
+      case "snack":
         return snack;
-      case 'electronic':
+      case "electronic":
         return electronic;
-      case 'pets':
+      case "pets":
         return pets;
-      case 'coffee':
+      case "coffee":
         return coffee;
-      case 'entertainment':
+      case "entertainment":
         return entertainment;
-      case 'office':
+      case "office":
         return office;
-      case 'cigarette':
+      case "cigarette":
         return cigaret;
-      case 'beauty':
+      case "beauty":
         return beauty;
-      case 'car':
+      case "car":
         return car;
-      case 'motor':
+      case "motor":
         return motorcycle;
-      case 'sport':
+      case "sport":
         return sport;
-      case 'tax':
+      case "tax":
         return tax;
-      case 'internet':
+      case "internet":
         return internet;
-      case 'home':
+      case "home":
         return home;
-      case 'charity':
+      case "charity":
         return charity;
-      case 'social':
+      case "social":
         return social;
-      case 'bill':
+      case "bill":
         return bill;
-      case 'electric':
+      case "electric":
         return electric;
       default:
-        return '';
+        return "";
     }
   };
 
-  console.log('type', type);
+  // console.log("type", type);
 
   return (
-    <IncomeItemStyled indicator={indicatorColor}>
-      <div className="icon">{type === 'expense' ? expenseCatIcon() : categoryIcon()}</div>
+    <IncomeItemStyled
+      indicator={indicatorColor}
+      onClick={() => setSelectedId(id)}
+    >
+      <div className="icon">
+        {type === "expense" ? expenseCatIcon() : categoryIcon()}
+      </div>
       <div className="content">
         <h5>{title}</h5>
         <div className="inner-content">
           <div className="text">
-            <p>{currencyFormat.format(amount, { code: 'IDR' })}</p>
+            <p>{currencyFormat.format(amount, { code: "IDR" })}</p>
             <p>
               {calender} {dateFormat(date)}
             </p>
@@ -163,7 +182,14 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
             </p>
           </div>
           <div className="btn-con">
-            <Button icon={trash} bPad={'1rem'} bRad={'50%'} bg={'var(--primary-color'} color={'#f1f2fa'} iColor={'#f1f2fa'} hColor={'var(--color-green)'} onClick={() => deleteItem(id)} />
+            <Button
+              icon={trash}
+              bPad={"1rem"}
+              bRad={"50%"}
+              bg={"var(--primary-color"}
+              color={"#f1f2fa"}
+              onClick={() => deleteItem(id)}
+            />
           </div>
         </div>
       </div>
@@ -172,6 +198,7 @@ function IncomeItem({ id, title, amount, date, category, description, deleteItem
 }
 
 const IncomeItemStyled = styled.div`
+  cursor: pointer;
   background: rgba(252, 246, 249, 0.6);
   border: transparent;
   box-shadow: 0px 1px 15px rgba(0, 0, 255, 0.2);

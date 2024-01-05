@@ -1,7 +1,7 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
-function Button({ name, icon, onClick, bg, bPad, color, bRad }) {
+function Button({ name, icon, onClick, bg, bPad, color, bRad, ...rest }) {
   return (
     <ButtonStyled
       style={{
@@ -11,6 +11,7 @@ function Button({ name, icon, onClick, bg, bPad, color, bRad }) {
         color: color,
       }}
       onClick={onClick}
+      {...rest}
     >
       {icon}
       {name}

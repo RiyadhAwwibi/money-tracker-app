@@ -1,7 +1,7 @@
-import React, { useContext, useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useState } from "react";
+import axios from "axios";
 
-const BASE_URL = 'https://elegant-wasp-capris.cyclic.app/api/v1/';
+const BASE_URL = "http://localhost:5000/api/v1/";
 
 const GlobalContext = React.createContext();
 
@@ -9,12 +9,26 @@ export const GlobalProvider = ({ children }) => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [resIncomes, setResIncomes] = useState({});
 
   //calculate incomes
   const addIncome = async (income) => {
-    const response = await axios.post(`${BASE_URL}add-income`, income).catch((err) => {
-      setError(err.response.data.message);
-    });
+    const response = await axios
+      .post(`${BASE_URL}add-income`, income)
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
+    getIncomes();
+  };
+  //calculate incomes
+  const updateIncome = async (id, income) => {
+    try {
+      await axios.patch(`${BASE_URL}update-income/${id}`, income);
+    } catch (error) {
+      setError(error);
+      console.log(error);
+    }
     getIncomes();
   };
 
@@ -22,6 +36,18 @@ export const GlobalProvider = ({ children }) => {
     const response = await axios.get(`${BASE_URL}get-incomes`);
     setIncomes(response.data);
     console.log(response.data);
+  };
+
+  const getSingleIncomes = async (id) => {
+    const response = await axios.get(`${BASE_URL}get-incomes/${id}`);
+    setResIncomes({
+      ...resIncomes,
+      title: response.data.title,
+      amount: response.data.amount,
+      date: response.data.date,
+      category: response.data.category,
+      description: response.data.description,
+    });
   };
 
   const deleteIncome = async (id) => {
@@ -40,9 +66,11 @@ export const GlobalProvider = ({ children }) => {
 
   //calculate expenses
   const addExpense = async (income) => {
-    const response = await axios.post(`${BASE_URL}add-expense`, income).catch((err) => {
-      setError(err.response.data.message);
-    });
+    const response = await axios
+      .post(`${BASE_URL}add-expense`, income)
+      .catch((err) => {
+        setError(err.response.data.message);
+      });
     getExpenses();
   };
 
@@ -96,6 +124,11 @@ export const GlobalProvider = ({ children }) => {
         transactionHistory,
         error,
         setError,
+        selectedId,
+        setSelectedId,
+        getSingleIncomes,
+        resIncomes,
+        updateIncome,
       }}
     >
       {children}
