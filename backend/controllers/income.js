@@ -33,7 +33,6 @@ exports.addIncome = async (req, res) => {
 exports.getIncomes = async (req, res) => {
   let incomes;
   const { month, year } = req.query;
-  console.log(req.query);
   const parsedMonth = parseInt(month);
   const parsedYear = parseInt(year);
 
