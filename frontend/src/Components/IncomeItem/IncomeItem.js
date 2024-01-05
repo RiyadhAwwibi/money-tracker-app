@@ -59,9 +59,8 @@ function IncomeItem({
   deleteItem,
   indicatorColor,
   type,
+  ...rest
 }) {
-  const { setSelectedId, selectedId } = useGlobalContext();
-
   const categoryIcon = () => {
     switch (category) {
       case "salary":
@@ -160,10 +159,7 @@ function IncomeItem({
   // console.log("type", type);
 
   return (
-    <IncomeItemStyled
-      indicator={indicatorColor}
-      onClick={() => setSelectedId(id)}
-    >
+    <IncomeItemStyled indicator={indicatorColor} {...rest}>
       <div className="icon">
         {type === "expense" ? expenseCatIcon() : categoryIcon()}
       </div>

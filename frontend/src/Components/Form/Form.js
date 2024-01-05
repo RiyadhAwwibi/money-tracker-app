@@ -12,8 +12,8 @@ function Form() {
     getIncomes,
     error,
     setError,
-    selectedId,
-    setSelectedId,
+    selectedIdIncome,
+    setSelectedIdIncome,
     getSingleIncomes,
     resIncomes,
     updateIncome,
@@ -29,13 +29,13 @@ function Form() {
   const { title, amount, date, category, description } = inputState;
 
   useEffect(() => {
-    if (selectedId) {
-      getSingleIncomes(selectedId);
+    if (selectedIdIncome) {
+      getSingleIncomes(selectedIdIncome);
     }
-  }, [selectedId]);
+  }, [selectedIdIncome]);
 
   useEffect(() => {
-    if (selectedId) {
+    if (selectedIdIncome) {
       setInputState({
         title: resIncomes?.title,
         amount: resIncomes?.amount,
@@ -44,7 +44,7 @@ function Form() {
         description: resIncomes?.description,
       });
     }
-  }, [selectedId, setInputState, resIncomes]);
+  }, [selectedIdIncome, setInputState, resIncomes]);
 
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
@@ -53,12 +53,12 @@ function Form() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (selectedId) {
-      updateIncome(selectedId, inputState);
+    if (selectedIdIncome) {
+      updateIncome(selectedIdIncome, inputState);
     } else {
       addIncome(inputState);
     }
-    setSelectedId(null);
+    setSelectedIdIncome(null);
     setInputState({
       title: "",
       amount: "",
@@ -69,7 +69,7 @@ function Form() {
   };
 
   const resetForm = () => {
-    setSelectedId(null);
+    setSelectedIdIncome(null);
     setInputState({
       title: "",
       amount: "",
@@ -78,8 +78,6 @@ function Form() {
       description: "",
     });
   };
-
-  console.log(resIncomes);
 
   return (
     <FormStyled onSubmit={handleSubmit} as="form">
@@ -149,7 +147,7 @@ function Form() {
         ></textarea>
       </div>
       <div className="submit-btn">
-        {selectedId ? (
+        {selectedIdIncome ? (
           <Button
             name={"Update"}
             icon={plus}
@@ -171,7 +169,7 @@ function Form() {
           />
         )}
 
-        {selectedId ? (
+        {selectedIdIncome ? (
           <Button
             name={"Hapus"}
             icon={plus}

@@ -1,37 +1,80 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useGlobalContext } from '../../context/globalContext';
-import Button from '../Button/Button';
-import { plus } from '../../utils/icons';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { useGlobalContext } from "../../context/globalContext";
+import Button from "../Button/Button";
+import { plus } from "../../utils/icons";
 
 function ExpenseForm() {
-  const { addExpense, error, setError } = useGlobalContext();
+  const {
+    addExpense,
+    error,
+    setError,
+    selectedIdExpenses,
+    setSelectedIdExpenses,
+    getSigleExpenses,
+    resExpenses,
+    updateExpenses,
+  } = useGlobalContext();
   const [inputState, setInputState] = useState({
-    title: '',
-    amount: '',
-    date: '',
-    category: '',
-    description: '',
+    title: "",
+    amount: "",
+    date: new Date(),
+    category: "",
+    description: "",
   });
 
   const { title, amount, date, category, description } = inputState;
 
+  useEffect(() => {
+    if (selectedIdExpenses) {
+      getSigleExpenses(selectedIdExpenses);
+    }
+  }, [selectedIdExpenses]);
+
+  useEffect(() => {
+    if (selectedIdExpenses) {
+      setInputState({
+        title: resExpenses?.title,
+        amount: resExpenses?.amount,
+        date: Date.parse(resExpenses?.date),
+        category: resExpenses?.category,
+        description: resExpenses?.description,
+      });
+    }
+  }, [selectedIdExpenses, setInputState, resExpenses]);
+
   const handleInput = (name) => (e) => {
     setInputState({ ...inputState, [name]: e.target.value });
-    setError('');
+    setError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addExpense(inputState);
+    if (selectedIdExpenses) {
+      updateExpenses(selectedIdExpenses, inputState);
+    } else {
+      addExpense(inputState);
+    }
+    setSelectedIdExpenses(null);
     setInputState({
-      title: '',
-      amount: '',
-      date: '',
-      category: '',
-      description: '',
+      title: "",
+      amount: "",
+      date: new Date(),
+      category: "",
+      description: "",
+    });
+  };
+
+  const resetForm = () => {
+    setSelectedIdExpenses(null);
+    setInputState({
+      title: "",
+      amount: "",
+      date: new Date(),
+      category: "",
+      description: "",
     });
   };
 
@@ -39,16 +82,28 @@ function ExpenseForm() {
     <ExpenseFormStyled onSubmit={handleSubmit}>
       {error && <p className="error">{error}</p>}
       <div className="input-control">
-        <input type="text" value={title} name={'title'} placeholder="Judul Pengeluaran" onChange={handleInput('title')} />
+        <input
+          type="text"
+          value={title || ""}
+          name={"title"}
+          placeholder="Judul Pengeluaran"
+          onChange={handleInput("title")}
+        />
       </div>
       <div className="input-control">
-        <input value={amount} type="number" name={'amount'} placeholder={'Jumlah'} onChange={handleInput('amount')} />
+        <input
+          value={amount || ""}
+          type="number"
+          name={"amount"}
+          placeholder={"Jumlah"}
+          onChange={handleInput("amount")}
+        />
       </div>
       <div className="input-control">
         <DatePicker
           id="date"
           placeholderText="Tanggal"
-          selected={date}
+          selected={date || ""}
           dateFormat="dd/MM/yyyy"
           onChange={(date) => {
             setInputState({ ...inputState, date: date });
@@ -56,7 +111,13 @@ function ExpenseForm() {
         />
       </div>
       <div className="selects input-control">
-        <select required value={category} name="category" id="category" onChange={handleInput('category')}>
+        <select
+          required
+          value={category}
+          name="category"
+          id="category"
+          onChange={handleInput("category")}
+        >
           <option value="" disabled>
             Kategori
           </option>
@@ -91,10 +152,51 @@ function ExpenseForm() {
         </select>
       </div>
       <div className="input-control">
-        <textarea name="description" value={description} placeholder="Tambah Keterangan" id="description" cols="30" rows="4" onChange={handleInput('description')}></textarea>
+        <textarea
+          name="description"
+          value={description || ""}
+          placeholder="Tambah Keterangan"
+          id="description"
+          cols="30"
+          rows="4"
+          onChange={handleInput("description")}
+        ></textarea>
       </div>
       <div className="submit-btn">
-        <Button name={'Tambah Pengeluaran'} icon={plus} bPad={'.8rem 1.6rem'} bRad={'30px'} bg={'var(--color-accent'} color={'#f1f2fa'} />
+        {selectedIdExpenses ? (
+          <Button
+            name={"Update"}
+            icon={plus}
+            bPad={".8rem 1.6rem"}
+            bRad={"30px"}
+            bg={"var(--color-accent"}
+            color={"#f1f2fa"}
+            type="submit"
+          />
+        ) : (
+          <Button
+            name={"Tambah Pemasukan"}
+            icon={plus}
+            bPad={".8rem 1.6rem"}
+            bRad={"30px"}
+            bg={"var(--color-accent"}
+            color={"#f1f2fa"}
+            type="submit"
+          />
+        )}
+
+        {selectedIdExpenses ? (
+          <Button
+            name={"Hapus"}
+            icon={plus}
+            bPad={".8rem 1.6rem"}
+            bRad={"30px"}
+            bg={"var(--color-accent"}
+            color={"#f1f2fa"}
+            onClick={() => resetForm()}
+            type="button"
+          />
+        ) : null}
       </div>
     </ExpenseFormStyled>
   );

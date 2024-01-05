@@ -14,7 +14,7 @@ function App() {
   const [active, setActive] = useState(1);
   const [modal, setModal] = useState(false);
 
-  const global = useGlobalContext();
+  const { setSelectedId } = useGlobalContext();
   // console.log(global);
 
   const displayData = () => {

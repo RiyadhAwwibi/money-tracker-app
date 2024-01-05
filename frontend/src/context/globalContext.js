@@ -9,8 +9,10 @@ export const GlobalProvider = ({ children }) => {
   const [incomes, setIncomes] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [error, setError] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedIdIncome, setSelectedIdIncome] = useState(null);
+  const [selectedIdExpenses, setSelectedIdExpenses] = useState(null);
   const [resIncomes, setResIncomes] = useState({});
+  const [resExpenses, setResExpenses] = useState({});
 
   //calculate incomes
   const addIncome = async (income) => {
@@ -27,15 +29,25 @@ export const GlobalProvider = ({ children }) => {
       await axios.patch(`${BASE_URL}update-income/${id}`, income);
     } catch (error) {
       setError(error);
-      console.log(error);
+      // console.log(error);
     }
     getIncomes();
   };
 
-  const getIncomes = async () => {
-    const response = await axios.get(`${BASE_URL}get-incomes`);
+  const getIncomes = async (date) => {
+    let response;
+    if (isNaN(date)) {
+      response = await axios.get(`${BASE_URL}get-incomes`);
+    } else {
+      response = await axios.get(
+        `${BASE_URL}get-incomes/?month=${
+          new Date(date).getMonth() + 1
+        }&year=${new Date(date).getFullYear()}`
+      );
+    }
+
     setIncomes(response.data);
-    console.log(response.data);
+    // console.log(response.data);
   };
 
   const getSingleIncomes = async (id) => {
@@ -74,10 +86,41 @@ export const GlobalProvider = ({ children }) => {
     getExpenses();
   };
 
-  const getExpenses = async () => {
-    const response = await axios.get(`${BASE_URL}get-expenses`);
+  const getExpenses = async (date) => {
+    let response;
+    if (isNaN(date)) {
+      response = await axios.get(`${BASE_URL}get-expenses`);
+    } else {
+      response = await axios.get(
+        `${BASE_URL}get-expenses/?month=${
+          new Date(date).getMonth() + 1
+        }&year=${new Date(date).getFullYear()}`
+      );
+    }
     setExpenses(response.data);
-    console.log(response.data);
+    // console.log(response.data);
+  };
+
+  const updateExpenses = async (id, income) => {
+    try {
+      await axios.patch(`${BASE_URL}update-expense/${id}`, income);
+    } catch (error) {
+      setError(error);
+      console.log(error);
+    }
+    getExpenses();
+  };
+
+  const getSigleExpenses = async (id) => {
+    const response = await axios.get(`${BASE_URL}get-expenses/${id}`);
+    setResExpenses({
+      ...resExpenses,
+      title: response.data.title,
+      amount: response.data.amount,
+      date: response.data.date,
+      category: response.data.category,
+      description: response.data.description,
+    });
   };
 
   const deleteExpense = async (id) => {
@@ -124,11 +167,17 @@ export const GlobalProvider = ({ children }) => {
         transactionHistory,
         error,
         setError,
-        selectedId,
-        setSelectedId,
+        selectedIdIncome,
+        setSelectedIdIncome,
         getSingleIncomes,
         resIncomes,
         updateIncome,
+        updateExpenses,
+        getSigleExpenses,
+        resExpenses,
+        setResExpenses,
+        selectedIdExpenses,
+        setSelectedIdExpenses,
       }}
     >
       {children}
